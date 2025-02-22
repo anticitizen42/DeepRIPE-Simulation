@@ -1,147 +1,115 @@
 #!/usr/bin/env python3
 """
-Adaptive Parameter Search for DV/RIPE Simulation Framework
+Adaptive Parameter Search for DV/RIPE Simulation Framework with Physical Diagnostics
 
-This script uses skopt's gp_minimize to search over the parameter space,
-and it automatically adjusts the search bounds if the simulation returns an error
-of 1.0 (interpreted as a blow-up). The bounds are tightened around the current best
-parameters to help steer the simulation into a stable region.
+This script uses skopt's gp_minimize to search over the parameter space.
+The objective function runs a short simulation (via run_dvripe_sim) and compares
+the resulting diagnostics (spin, charge, gravitational indentation) to target values.
+The objective is the weighted sum of deviations.
 """
 
 import sys
+import os
 import logging
+import json
 from skopt import gp_minimize
+from skopt.space import Real
 
-# Import the main simulation function.
-# Ensure your PYTHONPATH is set appropriately so that 'src' is in the path.
-try:
-    from src.simulation import run_dvripe_sim
-except ImportError:
-    logging.error("Could not import run_dvripe_sim from src.simulation. Check your PYTHONPATH and file structure.")
-    sys.exit(1)
+# Ensure the project root is in the Python path
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
-def params_from_list(opt_params):
+from src.simulation import run_dvripe_sim
+
+# ------------------------------------------------------------------
+# TARGET DIAGNOSTICS & WEIGHTS (adjust as needed)
+# ------------------------------------------------------------------
+TARGET_SPIN = 0.5
+TARGET_CHARGE = 0.0
+TARGET_MASS = 0.8  # using gravitational indentation as a mass proxy
+
+WEIGHT_SPIN = 1.0
+WEIGHT_CHARGE = 1.0
+WEIGHT_MASS = 1.0
+
+# ------------------------------------------------------------------
+# OBJECTIVE FUNCTION
+# ------------------------------------------------------------------
+def objective(params):
     """
-    Convert a list of optimized parameters into a full parameter dictionary for run_dvripe_sim.
+    The params vector is assumed to be: [lambda_e, v_e, delta_e, e_gauge].
     
-    Assumes the list is in the order: [lambda, v, delta, dt_initial].
-    Modify the mapping below as needed to match your simulation's expected parameters.
+    We run the simulation for a short time (tau_end=0.5) to obtain the physical diagnostics,
+    then compute the weighted error compared to the target diagnostics.
     """
-    return {
-        "field_shape": (4, 8, 8, 8),   # Fixed field shape for the simulation.
-        "gauge_shape": (4, 8, 8, 8),   # Fixed gauge shape (adjust as needed).
-        "grav_shape":  (8, 8, 8),       # Fixed gravity shape (adjust as needed).
-        "lambda": opt_params[0],
-        "v": opt_params[1],
-        "delta": opt_params[2],
-        "dt_initial": opt_params[3],
-        "tau_end": 10.0,              # Dimensionless final time (default; adjust if needed).
-        "dx": 0.1,                    # Spatial step (default; adjust as needed).
-        "adaptive": True,             # Use adaptive time stepping in the simulation.
-        # Add any other fixed parameters as necessary.
+    lambda_e, v_e, delta_e, e_gauge = params
+    # Construct simulation parameters for a short run (speed is key in optimization)
+    sim_params = {
+        "field_shape": (4, 8, 8, 8),
+        "gauge_shape": (4, 8, 8, 8),
+        "grav_shape": (8, 8, 8),
+        "tau_end": 0.5,   # short simulation duration for parameter search
+        "dx": 0.1,
+        "dt": 0.01,
+        "adaptive": False,  # use fixed-step for consistency
+        "lambda_e": lambda_e,
+        "v_e": v_e,
+        "delta_e": delta_e,
+        "e_gauge": e_gauge,
     }
-
-def adaptive_objective(params, current_bounds):
-    """
-    Run the DV/RIPE simulation for the given parameters and adjust bounds if a blow-up occurs.
+    try:
+        spin, charge, grav = run_dvripe_sim(sim_params)
+    except Exception as e:
+        logging.error(f"Simulation error with params {params}: {e}")
+        # Return a high penalty if the simulation fails
+        return 1e6
     
-    Parameters:
-      params (list): Current parameter values.
-      current_bounds (list of tuples): The current search bounds for each parameter.
-      
-    Returns:
-      tuple: (error, new_bounds)
-             error (float): The simulation error.
-             new_bounds (list of tuples): Updated bounds, tightened around `params` if error == 1.0.
-    """
-    # Convert list to dictionary using the helper function.
-    param_dict = params_from_list(params)
-    result = run_dvripe_sim(param_dict)
-    # If the simulation returns a tuple, assume the first element is the error.
-    if isinstance(result, tuple):
-        error = result[0]
-    else:
-        error = result
-
-    new_bounds = current_bounds
-    if error == 1.0:
-        new_bounds = []
-        for i, p in enumerate(params):
-            lb, ub = current_bounds[i]
-            range_span = ub - lb
-            # Tighten the search range around the current value by 20%
-            delta_bound = 0.2 * range_span
-            new_lb = max(lb, p - delta_bound)
-            new_ub = min(ub, p + delta_bound)
-            new_bounds.append((new_lb, new_ub))
-    return error, new_bounds
-
-def run_adaptive_parameter_search(initial_bounds, n_iterations=5, calls_per_iteration=10):
-    """
-    Run the parameter search with adaptive bounds.
+    # Compute absolute deviations from target diagnostics
+    err_spin   = abs(spin - TARGET_SPIN)
+    err_charge = abs(charge - TARGET_CHARGE)
+    err_mass   = abs(grav - TARGET_MASS)
     
-    Parameters:
-      initial_bounds (list of tuples): Initial bounds for each parameter.
-      n_iterations (int): Maximum iterations to adjust the search space.
-      calls_per_iteration (int): Function evaluations per iteration.
-      
-    Returns:
-      tuple: (best_params, best_error, final_bounds)
-    """
-    bounds = initial_bounds
-    best_params = None
-    best_error = 1.0
+    obj_value = WEIGHT_SPIN * err_spin + WEIGHT_CHARGE * err_charge + WEIGHT_MASS * err_mass
+    logging.info(f"Params: {params} => Spin: {spin:.3f}, Charge: {charge:.3f}, Mass: {grav:.3f}, Obj: {obj_value:.3f}")
+    return obj_value
 
-    for iteration in range(n_iterations):
-        logging.info(f"Iteration {iteration+1} with bounds: {bounds}")
-
-        # Define objective for this iteration.
-        def objective(params):
-            err, _ = adaptive_objective(params, bounds)
-            # Return a scalar value
-            return float(err)
-
-        # Run the Gaussian process minimizer with the current bounds.
-        res = gp_minimize(objective, dimensions=bounds, n_calls=calls_per_iteration, random_state=iteration)
-        iteration_best_error = res.fun
-        iteration_best_params = res.x
-
-        logging.info(f"Iteration {iteration+1} best params: {iteration_best_params}, error: {iteration_best_error}")
-
-        # Update bounds based on the best parameters from this iteration.
-        _, updated_bounds = adaptive_objective(iteration_best_params, bounds)
-        bounds = updated_bounds
-
-        # Break early if a stable solution is found.
-        if iteration_best_error < 1.0:
-            best_params = iteration_best_params
-            best_error = iteration_best_error
-            logging.info("Stable solution found; terminating search early.")
-            break
-        else:
-            best_params = iteration_best_params
-            best_error = iteration_best_error
-
-    return best_params, best_error, bounds
+# ------------------------------------------------------------------
+# RUN PARAMETER SEARCH
+# ------------------------------------------------------------------
+def run_physical_parameter_search(initial_bounds, n_calls=50):
+    dimensions = [
+        Real(initial_bounds[0][0], initial_bounds[0][1], name="lambda_e"),
+        Real(initial_bounds[1][0], initial_bounds[1][1], name="v_e"),
+        Real(initial_bounds[2][0], initial_bounds[2][1], name="delta_e"),
+        Real(initial_bounds[3][0], initial_bounds[3][1], name="e_gauge")
+    ]
+    
+    res = gp_minimize(objective, dimensions, n_calls=n_calls, random_state=42)
+    return res.x, res.fun
 
 def main():
-    # Configure logging for info-level output.
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-
-    # Define the initial parameter search space.
-    # These bounds correspond to the following parameters (in order):
-    # [lambda, v, delta, dt_initial]
+    
+    # Define initial search bounds for parameters: [lambda_e, v_e, delta_e, e_gauge]
     initial_bounds = [
-        (2.0, 6.0),   # lambda
-        (0.5, 1.5),   # v
-        (1.0, 5.0),   # delta
-        (0.1, 0.6)    # dt_initial
+        (0.5, 2.0),    # lambda_e
+        (0.5, 2.0),    # v_e
+        (-0.5, 0.5),   # delta_e
+        (0.01, 0.5)    # e_gauge
     ]
-
-    best_params, best_error, final_bounds = run_adaptive_parameter_search(initial_bounds)
-    print("Final best parameters:", best_params)
-    print("Final min error:", best_error)
-    print("Final search bounds:", final_bounds)
+    
+    best_params, best_obj = run_physical_parameter_search(initial_bounds, n_calls=50)
+    print("Best parameters found:", best_params)
+    print("Objective value:", best_obj)
+    
+    # Save the best parameters to a JSON file for use in simulation
+    output_data = {
+        "best_params": best_params,
+        "objective_value": best_obj,
+    }
+    output_file = "best_params_physical.json"
+    with open(output_file, "w") as f:
+        json.dump(output_data, f, indent=4)
+    logging.info(f"Best parameters written to {output_file}")
 
 if __name__ == "__main__":
     main()

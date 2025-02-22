@@ -1,0 +1,374 @@
+Simulation Diagnostics Report
+=============================
+
+Parameters:
+field_shape: (4, 8, 16, 16)
+gauge_shape: (4, 8, 16, 16)
+grav_shape: (16, 16, 16)
+tau_end: 0.5
+dx: 0.1
+dt: 0.01
+lambda_e: 1.0
+v_e: 1.0
+delta_e: 0.1
+e_gauge: 0.1
+adaptive: False
+
+
+Time = 0.0000
+phi1 Amplitude: min = 6.8599e-01, max = 9.9751e-01, mean = 9.8197e-01, std = 4.1449e-02
+phi2 Amplitude: min = 6.8599e-01, max = 9.9751e-01, mean = 9.8197e-01, std = 4.1449e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.9389e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.9389e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0100
+phi1 Amplitude: min = 6.8036e-01, max = 9.9751e-01, mean = 9.8184e-01, std = 4.1749e-02
+phi2 Amplitude: min = 6.8036e-01, max = 9.9751e-01, mean = 9.8184e-01, std = 4.1749e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.9389e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.9389e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0200
+phi1 Amplitude: min = 6.6371e-01, max = 9.9751e-01, mean = 9.8146e-01, std = 4.2662e-02
+phi2 Amplitude: min = 6.6371e-01, max = 9.9751e-01, mean = 9.8146e-01, std = 4.2662e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0300
+phi1 Amplitude: min = 6.3675e-01, max = 9.9751e-01, mean = 9.8082e-01, std = 4.4219e-02
+phi2 Amplitude: min = 6.3675e-01, max = 9.9751e-01, mean = 9.8082e-01, std = 4.4219e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0400
+phi1 Amplitude: min = 6.0060e-01, max = 9.9751e-01, mean = 9.7996e-01, std = 4.6449e-02
+phi2 Amplitude: min = 6.0060e-01, max = 9.9751e-01, mean = 9.7996e-01, std = 4.6449e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -7.8063e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -7.8063e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0500
+phi1 Amplitude: min = 5.5679e-01, max = 9.9751e-01, mean = 9.7888e-01, std = 4.9349e-02
+phi2 Amplitude: min = 5.5679e-01, max = 9.9751e-01, mean = 9.7888e-01, std = 4.9349e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.9031e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.9031e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0600
+phi1 Amplitude: min = 5.0713e-01, max = 9.9751e-01, mean = 9.7760e-01, std = 5.2876e-02
+phi2 Amplitude: min = 5.0713e-01, max = 9.9751e-01, mean = 9.7760e-01, std = 5.2876e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0700
+phi1 Amplitude: min = 4.5365e-01, max = 9.9752e-01, mean = 9.7616e-01, std = 5.6937e-02
+phi2 Amplitude: min = 4.5365e-01, max = 9.9752e-01, mean = 9.7616e-01, std = 5.6937e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.2884e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -6.2884e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0800
+phi1 Amplitude: min = 3.9850e-01, max = 9.9752e-01, mean = 9.7458e-01, std = 6.1402e-02
+phi2 Amplitude: min = 3.9850e-01, max = 9.9752e-01, mean = 9.7458e-01, std = 6.1402e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.1684e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.1684e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.0900
+phi1 Amplitude: min = 3.4386e-01, max = 9.9752e-01, mean = 9.7289e-01, std = 6.6118e-02
+phi2 Amplitude: min = 3.4386e-01, max = 9.9752e-01, mean = 9.7289e-01, std = 6.6118e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1000
+phi1 Amplitude: min = 2.9181e-01, max = 9.9752e-01, mean = 9.7112e-01, std = 7.0923e-02
+phi2 Amplitude: min = 2.9181e-01, max = 9.9752e-01, mean = 9.7112e-01, std = 7.0923e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.0842e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.0842e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1100
+phi1 Amplitude: min = 2.4429e-01, max = 9.9752e-01, mean = 9.6932e-01, std = 7.5658e-02
+phi2 Amplitude: min = 2.4429e-01, max = 9.9752e-01, mean = 9.6932e-01, std = 7.5658e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1200
+phi1 Amplitude: min = 2.0295e-01, max = 9.9753e-01, mean = 9.6750e-01, std = 8.0182e-02
+phi2 Amplitude: min = 2.0295e-01, max = 9.9753e-01, mean = 9.6750e-01, std = 8.0182e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.7705e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.7705e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1300
+phi1 Amplitude: min = 1.6914e-01, max = 9.9753e-01, mean = 9.6571e-01, std = 8.4373e-02
+phi2 Amplitude: min = 1.6914e-01, max = 9.9753e-01, mean = 9.6571e-01, std = 8.4373e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1400
+phi1 Amplitude: min = 1.4382e-01, max = 9.9753e-01, mean = 9.6397e-01, std = 8.8134e-02
+phi2 Amplitude: min = 1.4382e-01, max = 9.9753e-01, mean = 9.6397e-01, std = 8.8134e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.3368e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.3368e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1500
+phi1 Amplitude: min = 1.2756e-01, max = 9.9754e-01, mean = 9.6232e-01, std = 9.1391e-02
+phi2 Amplitude: min = 1.2756e-01, max = 9.9754e-01, mean = 9.6232e-01, std = 9.1391e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1600
+phi1 Amplitude: min = 1.2052e-01, max = 9.9754e-01, mean = 9.6078e-01, std = 9.4098e-02
+phi2 Amplitude: min = 1.2052e-01, max = 9.9754e-01, mean = 9.6078e-01, std = 9.4098e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1700
+phi1 Amplitude: min = 1.2244e-01, max = 9.9755e-01, mean = 9.5936e-01, std = 9.6230e-02
+phi2 Amplitude: min = 1.2244e-01, max = 9.9755e-01, mean = 9.5936e-01, std = 9.6230e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 6.5052e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 6.5052e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1800
+phi1 Amplitude: min = 1.3270e-01, max = 9.9755e-01, mean = 9.5810e-01, std = 9.7782e-02
+phi2 Amplitude: min = 1.3270e-01, max = 9.9755e-01, mean = 9.5810e-01, std = 9.7782e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.7347e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.7347e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.1900
+phi1 Amplitude: min = 1.5034e-01, max = 9.9755e-01, mean = 9.5700e-01, std = 9.8766e-02
+phi2 Amplitude: min = 1.5034e-01, max = 9.9755e-01, mean = 9.5700e-01, std = 9.8766e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2000
+phi1 Amplitude: min = 1.7415e-01, max = 9.9756e-01, mean = 9.5609e-01, std = 9.9206e-02
+phi2 Amplitude: min = 1.7415e-01, max = 9.9756e-01, mean = 9.5609e-01, std = 9.9206e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.6021e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.6021e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2100
+phi1 Amplitude: min = 2.0272e-01, max = 9.9756e-01, mean = 9.5536e-01, std = 9.9133e-02
+phi2 Amplitude: min = 2.0272e-01, max = 9.9756e-01, mean = 9.5536e-01, std = 9.9133e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -2.8189e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2200
+phi1 Amplitude: min = 2.3452e-01, max = 9.9757e-01, mean = 9.5482e-01, std = 9.8586e-02
+phi2 Amplitude: min = 2.3452e-01, max = 9.9757e-01, mean = 9.5482e-01, std = 9.8586e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.2526e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.2526e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2300
+phi1 Amplitude: min = 2.6798e-01, max = 9.9770e-01, mean = 9.5448e-01, std = 9.7605e-02
+phi2 Amplitude: min = 2.6798e-01, max = 9.9770e-01, mean = 9.5448e-01, std = 9.7605e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2400
+phi1 Amplitude: min = 3.0156e-01, max = 9.9784e-01, mean = 9.5434e-01, std = 9.6234e-02
+phi2 Amplitude: min = 3.0156e-01, max = 9.9784e-01, mean = 9.5434e-01, std = 9.6234e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 6.5052e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 6.5052e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2500
+phi1 Amplitude: min = 3.3384e-01, max = 9.9800e-01, mean = 9.5439e-01, std = 9.4519e-02
+phi2 Amplitude: min = 3.3384e-01, max = 9.9800e-01, mean = 9.5439e-01, std = 9.4519e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -7.5894e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -7.5894e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2600
+phi1 Amplitude: min = 3.6357e-01, max = 9.9817e-01, mean = 9.5463e-01, std = 9.2513e-02
+phi2 Amplitude: min = 3.6357e-01, max = 9.9817e-01, mean = 9.5463e-01, std = 9.2513e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2700
+phi1 Amplitude: min = 3.8969e-01, max = 9.9848e-01, mean = 9.5505e-01, std = 9.0273e-02
+phi2 Amplitude: min = 3.8969e-01, max = 9.9848e-01, mean = 9.5505e-01, std = 9.0273e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 2.6021e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 2.6021e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2800
+phi1 Amplitude: min = 4.1143e-01, max = 9.9910e-01, mean = 9.5563e-01, std = 8.7862e-02
+phi2 Amplitude: min = 4.1143e-01, max = 9.9910e-01, mean = 9.5563e-01, std = 8.7862e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.2900
+phi1 Amplitude: min = 4.2826e-01, max = 1.0048e+00, mean = 9.5638e-01, std = 8.5347e-02
+phi2 Amplitude: min = 4.2826e-01, max = 1.0048e+00, mean = 9.5638e-01, std = 8.5347e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 8.6736e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 8.6736e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3000
+phi1 Amplitude: min = 4.3993e-01, max = 1.0120e+00, mean = 9.5727e-01, std = 8.2800e-02
+phi2 Amplitude: min = 4.3993e-01, max = 1.0120e+00, mean = 9.5727e-01, std = 8.2800e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3100
+phi1 Amplitude: min = 4.4649e-01, max = 1.0196e+00, mean = 9.5830e-01, std = 8.0296e-02
+phi2 Amplitude: min = 4.4649e-01, max = 1.0196e+00, mean = 9.5830e-01, std = 8.0296e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3200
+phi1 Amplitude: min = 4.4818e-01, max = 1.0275e+00, mean = 9.5944e-01, std = 7.7904e-02
+phi2 Amplitude: min = 4.4818e-01, max = 1.0275e+00, mean = 9.5944e-01, std = 7.7904e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -5.6379e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -5.6379e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3300
+phi1 Amplitude: min = 4.4550e-01, max = 1.0371e+00, mean = 9.6069e-01, std = 7.5695e-02
+phi2 Amplitude: min = 4.4550e-01, max = 1.0371e+00, mean = 9.6069e-01, std = 7.5695e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.3010e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3400
+phi1 Amplitude: min = 4.3908e-01, max = 1.0481e+00, mean = 9.6202e-01, std = 7.3729e-02
+phi2 Amplitude: min = 4.3908e-01, max = 1.0481e+00, mean = 9.6202e-01, std = 7.3729e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.6863e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.6863e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3500
+phi1 Amplitude: min = 4.2971e-01, max = 1.0593e+00, mean = 9.6343e-01, std = 7.2056e-02
+phi2 Amplitude: min = 4.2971e-01, max = 1.0593e+00, mean = 9.6343e-01, std = 7.2056e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.9873e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.9873e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3600
+phi1 Amplitude: min = 4.1821e-01, max = 1.0707e+00, mean = 9.6489e-01, std = 7.0713e-02
+phi2 Amplitude: min = 4.1821e-01, max = 1.0707e+00, mean = 9.6489e-01, std = 7.0713e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 3.4694e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 3.4694e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3700
+phi1 Amplitude: min = 4.0236e-01, max = 1.0824e+00, mean = 9.6638e-01, std = 6.9726e-02
+phi2 Amplitude: min = 4.0236e-01, max = 1.0824e+00, mean = 9.6638e-01, std = 6.9726e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 4.3368e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 4.3368e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3800
+phi1 Amplitude: min = 3.8529e-01, max = 1.0943e+00, mean = 9.6790e-01, std = 6.9101e-02
+phi2 Amplitude: min = 3.8529e-01, max = 1.0943e+00, mean = 9.6790e-01, std = 6.9101e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -4.5536e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.3900
+phi1 Amplitude: min = 3.6954e-01, max = 1.1064e+00, mean = 9.6943e-01, std = 6.8836e-02
+phi2 Amplitude: min = 3.6954e-01, max = 1.1064e+00, mean = 9.6943e-01, std = 6.8836e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.0842e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4000
+phi1 Amplitude: min = 3.5584e-01, max = 1.1188e+00, mean = 9.7095e-01, std = 6.8915e-02
+phi2 Amplitude: min = 3.5584e-01, max = 1.1188e+00, mean = 9.7095e-01, std = 6.8915e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.4694e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.4694e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4100
+phi1 Amplitude: min = 3.4473e-01, max = 1.1313e+00, mean = 9.7244e-01, std = 6.9315e-02
+phi2 Amplitude: min = 3.4473e-01, max = 1.1313e+00, mean = 9.7244e-01, std = 6.9315e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4200
+phi1 Amplitude: min = 3.3653e-01, max = 1.1441e+00, mean = 9.7390e-01, std = 7.0008e-02
+phi2 Amplitude: min = 3.3653e-01, max = 1.1441e+00, mean = 9.7390e-01, std = 7.0008e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 4.3368e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 4.3368e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4300
+phi1 Amplitude: min = 3.3134e-01, max = 1.1571e+00, mean = 9.7530e-01, std = 7.0964e-02
+phi2 Amplitude: min = 3.3134e-01, max = 1.1571e+00, mean = 9.7530e-01, std = 7.0964e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.5179e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.5179e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4400
+phi1 Amplitude: min = 3.2904e-01, max = 1.1703e+00, mean = 9.7664e-01, std = 7.2150e-02
+phi2 Amplitude: min = 3.2904e-01, max = 1.1703e+00, mean = 9.7664e-01, std = 7.2150e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 0.0000e+00
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 0.0000e+00
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4500
+phi1 Amplitude: min = 3.2933e-01, max = 1.1838e+00, mean = 9.7789e-01, std = 7.3538e-02
+phi2 Amplitude: min = 3.2933e-01, max = 1.1838e+00, mean = 9.7789e-01, std = 7.3538e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -8.6736e-19
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4600
+phi1 Amplitude: min = 3.3176e-01, max = 1.1976e+00, mean = 9.7906e-01, std = 7.5097e-02
+phi2 Amplitude: min = 3.3176e-01, max = 1.1976e+00, mean = 9.7906e-01, std = 7.5097e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.5179e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.5179e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4700
+phi1 Amplitude: min = 3.3530e-01, max = 1.2118e+00, mean = 9.8013e-01, std = 7.6800e-02
+phi2 Amplitude: min = 3.3530e-01, max = 1.2118e+00, mean = 9.8013e-01, std = 7.6800e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -1.7347e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4800
+phi1 Amplitude: min = 3.3719e-01, max = 1.2262e+00, mean = 9.8109e-01, std = 7.8619e-02
+phi2 Amplitude: min = 3.3719e-01, max = 1.2262e+00, mean = 9.8109e-01, std = 7.8619e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.5179e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.5179e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.4900
+phi1 Amplitude: min = 3.3968e-01, max = 1.2411e+00, mean = 9.8194e-01, std = 8.0530e-02
+phi2 Amplitude: min = 3.3968e-01, max = 1.2411e+00, mean = 9.8194e-01, std = 8.0530e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.4694e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = -3.4694e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
+Time = 0.5000
+phi1 Amplitude: min = 3.4229e-01, max = 1.2563e+00, mean = 9.8268e-01, std = 8.2510e-02
+phi2 Amplitude: min = 3.4229e-01, max = 1.2563e+00, mean = 9.8268e-01, std = 8.2510e-02
+phi1 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.7347e-18
+phi2 Phase: min = -3.0750e+00, max = 3.0750e+00, mean = 1.7347e-18
+Diagnostics: Spin = 0.0000e+00, Charge = -1.0000e+00, Grav Indentation = 1.0000e+00
+--------------------------------------------------
