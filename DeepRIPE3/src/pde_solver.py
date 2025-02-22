@@ -195,7 +195,7 @@ def local_error_norm(phi1_big, pi1_big, phi2_big, pi2_big, A_big,
     return err_phi1 + err_phi2 + err_A
 
 def evolve_fields_adaptive(phi1_init, phi2_init, A_init, tau_end, dt_initial, dx, params,
-                           err_tolerance=1e-3, dt_min=1e-6, dt_max=0.1):
+                           err_tolerance=1e-3, dt_min=1e-12, dt_max=0.1):
     """
     Adaptive PDE evolution using a "two half-steps vs. one full-step" approach for error estimation.
     We store pi1, pi2 as momenta. The code tries each step with dt:

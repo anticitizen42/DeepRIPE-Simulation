@@ -23,7 +23,7 @@ def objective(lambda_e, v_e, delta_e, e_gauge):
         "field_shape": (4,8,8,8),
         "gauge_shape": (4,8,8,8),
         "grav_shape": (8,8,8),
-        "tau_end": 3.0,
+        "tau_end": 1.0,
         "dtau": 0.01,
         "dx": 1.0,
         "adaptive": True,
