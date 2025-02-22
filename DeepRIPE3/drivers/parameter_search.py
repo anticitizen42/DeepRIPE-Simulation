@@ -1,115 +1,114 @@
 #!/usr/bin/env python3
 """
-Adaptive Parameter Search for DV/RIPE Simulation Framework with Physical Diagnostics
+drivers/parameter_search.py
 
-This script uses skopt's gp_minimize to search over the parameter space.
-The objective function runs a short simulation (via run_dvripe_sim) and compares
-the resulting diagnostics (spin, charge, gravitational indentation) to target values.
-The objective is the weighted sum of deviations.
+This script scans the parameter space of DV-RIPE to find resonant storm conditions
+that yield a stable vortex with emergent properties:
+  - Effective spin ~ 0.5 (from a composite of two interacting fields)
+  - Net charge = -1
+  - An energy proxy (mass) corresponding to 511 keV (dimensionless value = 1)
+
+It uses skopt's gp_minimize to minimize a composite objective function that runs a
+short simulation and compares the diagnostics to the target values.
 """
 
-import sys
 import os
-import logging
+import sys
 import json
+import logging
 from skopt import gp_minimize
 from skopt.space import Real
 
-# Ensure the project root is in the Python path
+# Ensure the project root is in the PYTHONPATH
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.simulation import run_dvripe_sim
+from src.constants import energy_dimless_to_keV  # if needed later
 
-# ------------------------------------------------------------------
-# TARGET DIAGNOSTICS & WEIGHTS (adjust as needed)
-# ------------------------------------------------------------------
-TARGET_SPIN = 0.5
-TARGET_CHARGE = 0.0
-TARGET_MASS = 0.8  # using gravitational indentation as a mass proxy
+# --- Target Diagnostics (tunable) ---
+TARGET_EFFECTIVE_SPIN = 0.5   # Our target effective spin (composite result)
+TARGET_CHARGE = -1.0          # Net charge target
+TARGET_ENERGY_DIMLESS = 1.0   # Dimensionless energy corresponding to 511 keV
 
+# --- Weights for the composite objective ---
 WEIGHT_SPIN = 1.0
 WEIGHT_CHARGE = 1.0
-WEIGHT_MASS = 1.0
+WEIGHT_ENERGY = 1.0
 
-# ------------------------------------------------------------------
-# OBJECTIVE FUNCTION
-# ------------------------------------------------------------------
-def objective(params):
+def composite_objective(params):
     """
-    The params vector is assumed to be: [lambda_e, v_e, delta_e, e_gauge].
+    Composite objective function for the parameter search.
     
-    We run the simulation for a short time (tau_end=0.5) to obtain the physical diagnostics,
-    then compute the weighted error compared to the target diagnostics.
+    params: list [lambda_e, v_e, delta_e, e_gauge]
+    
+    Steps:
+      1. Construct a short-run simulation using these parameters.
+      2. Extract diagnostics: raw_spin, charge, grav.
+      3. Map raw_spin into effective_spin via: effective_spin = -0.5 * raw_spin.
+         (So, for example, a raw winding of -1 gives an effective spin of 0.5.)
+      4. Compute the weighted absolute errors against target effective spin, charge, and energy.
     """
     lambda_e, v_e, delta_e, e_gauge = params
-    # Construct simulation parameters for a short run (speed is key in optimization)
     sim_params = {
-        "field_shape": (4, 8, 8, 8),
-        "gauge_shape": (4, 8, 8, 8),
-        "grav_shape": (8, 8, 8),
-        "tau_end": 0.5,   # short simulation duration for parameter search
+        "field_shape": (4, 8, 16, 16),
+        "gauge_shape": (4, 8, 16, 16),
+        "grav_shape": (16, 16, 16),
+        "tau_end": 0.5,   # Short simulation duration for scanning
         "dx": 0.1,
         "dt": 0.01,
-        "adaptive": False,  # use fixed-step for consistency
         "lambda_e": lambda_e,
         "v_e": v_e,
         "delta_e": delta_e,
         "e_gauge": e_gauge,
+        "adaptive": False,
     }
     try:
-        spin, charge, grav = run_dvripe_sim(sim_params)
+        result = run_dvripe_sim(sim_params)
+        # Use only the first three returned values:
+        raw_spin = result[0]
+        charge = result[1]
+        grav = result[2]
+        effective_spin = -0.5 * raw_spin  # Mapping: raw -1 gives effective 0.5.
+        effective_energy = grav           # Placeholder for energy diagnostics.
     except Exception as e:
-        logging.error(f"Simulation error with params {params}: {e}")
-        # Return a high penalty if the simulation fails
-        return 1e6
-    
-    # Compute absolute deviations from target diagnostics
-    err_spin   = abs(spin - TARGET_SPIN)
-    err_charge = abs(charge - TARGET_CHARGE)
-    err_mass   = abs(grav - TARGET_MASS)
-    
-    obj_value = WEIGHT_SPIN * err_spin + WEIGHT_CHARGE * err_charge + WEIGHT_MASS * err_mass
-    logging.info(f"Params: {params} => Spin: {spin:.3f}, Charge: {charge:.3f}, Mass: {grav:.3f}, Obj: {obj_value:.3f}")
-    return obj_value
+        logging.error("Simulation error with params {}: {}".format(params, e))
+        return 1e6  # Large penalty if simulation fails.
 
-# ------------------------------------------------------------------
-# RUN PARAMETER SEARCH
-# ------------------------------------------------------------------
-def run_physical_parameter_search(initial_bounds, n_calls=50):
+    err_spin = abs(effective_spin - TARGET_EFFECTIVE_SPIN)
+    err_charge = abs(charge - TARGET_CHARGE)
+    err_energy = abs(effective_energy - TARGET_ENERGY_DIMLESS)
+    objective_value = WEIGHT_SPIN * err_spin + WEIGHT_CHARGE * err_charge + WEIGHT_ENERGY * err_energy
+
+    logging.info("Params: {} => Effective Spin: {:.4f}, Charge: {:.4f}, Energy: {:.4f}, Obj: {:.4f}"
+                 .format(params, effective_spin, charge, effective_energy, objective_value))
+    return objective_value
+
+def run_parameter_search(n_calls=50):
+    """
+    Run the parameter search over:
+      - lambda_e in [0.5, 2.0]
+      - v_e in [0.5, 2.0]
+      - delta_e in [-0.5, 0.5]
+      - e_gauge in [0.01, 0.5]
+    """
     dimensions = [
-        Real(initial_bounds[0][0], initial_bounds[0][1], name="lambda_e"),
-        Real(initial_bounds[1][0], initial_bounds[1][1], name="v_e"),
-        Real(initial_bounds[2][0], initial_bounds[2][1], name="delta_e"),
-        Real(initial_bounds[3][0], initial_bounds[3][1], name="e_gauge")
+        Real(0.5, 2.0, name="lambda_e"),
+        Real(0.5, 2.0, name="v_e"),
+        Real(-0.5, 0.5, name="delta_e"),
+        Real(0.01, 0.5, name="e_gauge")
     ]
-    
-    res = gp_minimize(objective, dimensions, n_calls=n_calls, random_state=42)
-    return res.x, res.fun
+    result = gp_minimize(composite_objective, dimensions, n_calls=n_calls, random_state=42)
+    return result.x, result.fun
 
 def main():
     logging.basicConfig(level=logging.INFO, format="%(asctime)s - %(levelname)s - %(message)s")
-    
-    # Define initial search bounds for parameters: [lambda_e, v_e, delta_e, e_gauge]
-    initial_bounds = [
-        (0.5, 2.0),    # lambda_e
-        (0.5, 2.0),    # v_e
-        (-0.5, 0.5),   # delta_e
-        (0.01, 0.5)    # e_gauge
-    ]
-    
-    best_params, best_obj = run_physical_parameter_search(initial_bounds, n_calls=50)
+    best_params, best_obj = run_parameter_search(n_calls=50)
     print("Best parameters found:", best_params)
     print("Objective value:", best_obj)
-    
-    # Save the best parameters to a JSON file for use in simulation
-    output_data = {
-        "best_params": best_params,
-        "objective_value": best_obj,
-    }
-    output_file = "best_params_physical.json"
-    with open(output_file, "w") as f:
+    output_data = {"best_params": best_params, "objective_value": best_obj}
+    with open("best_params_composite.json", "w") as f:
         json.dump(output_data, f, indent=4)
-    logging.info(f"Best parameters written to {output_file}")
+    logging.info("Best parameters written to best_params_composite.json")
 
 if __name__ == "__main__":
     main()
