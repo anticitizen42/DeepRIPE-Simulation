@@ -1,0 +1,2 @@
+[console_scripts]
+dvripe_sim = src.simulation:run_dvripe_sim

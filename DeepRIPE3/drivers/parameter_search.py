@@ -2,14 +2,14 @@
 """
 drivers/parameter_search.py
 
-This script scans the parameter space of DV-RIPE to find resonant storm conditions
-that yield a stable vortex with emergent properties:
-  - Effective spin ~ 0.5 (from a composite of two interacting fields)
-  - Net charge = -1
-  - An energy proxy (mass) corresponding to 511 keV (dimensionless value = 1)
+This script scans the parameter space of DV-RIPE to identify resonant conditions that yield
+a stable vortex with emergent properties:
+  - Effective spin ~ 0.5,
+  - Net charge = -1,
+  - And an energy proxy corresponding to 511 keV (dimensionless value = 1).
 
-It uses skopt's gp_minimize to minimize a composite objective function that runs a
-short simulation and compares the diagnostics to the target values.
+GPU acceleration is forced on by setting "use_gpu": True.
+Extra logging has been added in the gauge operator (via GPUKernels) to verify GPU usage.
 """
 
 import os
@@ -19,16 +19,15 @@ import logging
 from skopt import gp_minimize
 from skopt.space import Real
 
-# Ensure the project root is in the PYTHONPATH
+# Ensure the project root is in the Python path.
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from src.simulation import run_dvripe_sim
-from src.constants import energy_dimless_to_keV  # if needed later
 
-# --- Target Diagnostics (tunable) ---
-TARGET_EFFECTIVE_SPIN = 0.5   # Our target effective spin (composite result)
-TARGET_CHARGE = -1.0          # Net charge target
-TARGET_ENERGY_DIMLESS = 1.0   # Dimensionless energy corresponding to 511 keV
+# --- Target diagnostics (tunable) ---
+TARGET_EFFECTIVE_SPIN = 0.5   # Target effective spin (after mapping raw spin)
+TARGET_CHARGE = -1.0          # Target net charge
+TARGET_ENERGY_DIMLESS = 1.0   # Energy proxy corresponding to 511 keV (dimensionless)
 
 # --- Weights for the composite objective ---
 WEIGHT_SPIN = 1.0
@@ -38,22 +37,19 @@ WEIGHT_ENERGY = 1.0
 def composite_objective(params):
     """
     Composite objective function for the parameter search.
-    
+
     params: list [lambda_e, v_e, delta_e, e_gauge]
-    
-    Steps:
-      1. Construct a short-run simulation using these parameters.
-      2. Extract diagnostics: raw_spin, charge, grav.
-      3. Map raw_spin into effective_spin via: effective_spin = -0.5 * raw_spin.
-         (So, for example, a raw winding of -1 gives an effective spin of 0.5.)
-      4. Compute the weighted absolute errors against target effective spin, charge, and energy.
+
+    Constructs a simulation using an enlarged domain, extended duration, and GPU acceleration enabled.
+    Then extracts diagnostics (raw_spin, charge, energy_proxy) and maps raw spin to effective spin.
+    Returns the weighted absolute deviation from the target values.
     """
     lambda_e, v_e, delta_e, e_gauge = params
     sim_params = {
-        "field_shape": (4, 8, 16, 16),
-        "gauge_shape": (4, 8, 16, 16),
-        "grav_shape": (16, 16, 16),
-        "tau_end": 0.5,   # Short simulation duration for scanning
+        "field_shape": (16, 32, 64, 64),   # Enlarged domain
+        "gauge_shape": (4, 32, 64, 64),
+        "grav_shape": (64, 64, 64),
+        "tau_end": 5.0,                    # Extended simulation duration
         "dx": 0.1,
         "dt": 0.01,
         "lambda_e": lambda_e,
@@ -61,41 +57,40 @@ def composite_objective(params):
         "delta_e": delta_e,
         "e_gauge": e_gauge,
         "adaptive": False,
+        "use_gpu": True                    # Force GPU acceleration
     }
     try:
+        # run_dvripe_sim returns (raw_spin, charge, energy_proxy)
         result = run_dvripe_sim(sim_params)
-        # Use only the first three returned values:
         raw_spin = result[0]
         charge = result[1]
-        grav = result[2]
-        effective_spin = -0.5 * raw_spin  # Mapping: raw -1 gives effective 0.5.
-        effective_energy = grav           # Placeholder for energy diagnostics.
+        energy_proxy = result[2]
+        effective_spin = -0.5 * raw_spin  # For example, raw_spin of -1 yields effective spin 0.5.
     except Exception as e:
-        logging.error("Simulation error with params {}: {}".format(params, e))
+        logging.error(f"Simulation error with params {params}: {e}")
         return 1e6  # Large penalty if simulation fails.
-
+    
     err_spin = abs(effective_spin - TARGET_EFFECTIVE_SPIN)
     err_charge = abs(charge - TARGET_CHARGE)
-    err_energy = abs(effective_energy - TARGET_ENERGY_DIMLESS)
+    err_energy = abs(energy_proxy - TARGET_ENERGY_DIMLESS)
     objective_value = WEIGHT_SPIN * err_spin + WEIGHT_CHARGE * err_charge + WEIGHT_ENERGY * err_energy
 
-    logging.info("Params: {} => Effective Spin: {:.4f}, Charge: {:.4f}, Energy: {:.4f}, Obj: {:.4f}"
-                 .format(params, effective_spin, charge, effective_energy, objective_value))
+    logging.info(f"Params: {params} => Effective Spin: {effective_spin:.4f}, Charge: {charge:.4f}, Energy: {energy_proxy:.4f}, Obj: {objective_value:.4f}")
     return objective_value
 
 def run_parameter_search(n_calls=50):
     """
-    Run the parameter search over:
-      - lambda_e in [0.5, 2.0]
-      - v_e in [0.5, 2.0]
-      - delta_e in [-0.5, 0.5]
-      - e_gauge in [0.01, 0.5]
+    Run the parameter search using gp_minimize over the following dimensions:
+      - lambda_e in [0.1, 5.0]
+      - v_e in [0.1, 5.0]
+      - delta_e in [-2.5, 2.5]
+      - e_gauge in [0.001, 1.0]
     """
     dimensions = [
-        Real(0.5, 2.0, name="lambda_e"),
-        Real(0.5, 2.0, name="v_e"),
-        Real(-0.5, 0.5, name="delta_e"),
-        Real(0.01, 0.5, name="e_gauge")
+        Real(0.1, 5.0, name="lambda_e"),
+        Real(0.1, 5.0, name="v_e"),
+        Real(-2.5, 2.5, name="delta_e"),
+        Real(0.001, 1.0, name="e_gauge")
     ]
     result = gp_minimize(composite_objective, dimensions, n_calls=n_calls, random_state=42)
     return result.x, result.fun

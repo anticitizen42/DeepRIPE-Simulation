@@ -2,27 +2,53 @@
 
 import numpy as np
 
+# Try to import PyOpenCL to check GPU usage.
+try:
+    import pyopencl as cl
+    GPU_AVAILABLE = True
+except ImportError:
+    GPU_AVAILABLE = False
+
+def report_gpu_usage():
+    """
+    Reports whether GPU acceleration is available and prints out GPU device information.
+    """
+    if not GPU_AVAILABLE:
+        print("PyOpenCL is not available. GPU acceleration is disabled.")
+        return
+
+    try:
+        # Create a context and get device information.
+        platforms = cl.get_platforms()
+        if platforms:
+            # Use the first platform and first device.
+            platform = platforms[0]
+            devices = platform.get_devices()
+            if devices:
+                device = devices[0]
+                print("GPU acceleration is enabled.")
+                print(f"Platform: {platform.name}, Vendor: {platform.vendor}")
+                print(f"Device: {device.name}")
+            else:
+                print("No GPU devices found on the first platform.")
+        else:
+            print("No OpenCL platforms found.")
+    except Exception as e:
+        print(f"Error reporting GPU usage: {e}")
+
 def compute_spin(field, dx):
     """
-    Compute the topological winding (interpreted as "spin") from a 2D slice of a field.
-    
-    If the input field has 4 dimensions (N0, N1, Ny, Nz), we extract the central slice.
-    If the input field has 5 dimensions (e.g., a field strength tensor with shape (4,4,Nx,Ny,Nz)),
-    we select a representative component (here F[1,2]) and extract its central slice.
-    
-    The winding is computed by summing the phase differences along the boundary of the slice,
-    then dividing by 2π.
+    Compute the topological winding (raw spin) from a central 2D slice of the field.
+    Supports 4D fields (N0, N1, Ny, Nz) or 5D fields (e.g. a field strength tensor).
     """
     if len(field.shape) == 4:
         N0, N1, Ny, Nz = field.shape
         slice_field = field[N0 // 2, N1 // 2, :, :]
     elif len(field.shape) == 5:
-        # Assume field has shape (4, 4, Nx, Ny, Nz)
         _, _, Nx, Ny, Nz = field.shape
-        # Use component [1,2] as a representative slice.
         slice_field = field[1, 2, :, :]
     else:
-        raise ValueError("Unexpected field shape for compute_spin: {}".format(field.shape))
+        raise ValueError(f"Unexpected field shape for compute_spin: {field.shape}")
     
     phase = np.angle(slice_field)
     winding = 0.0
@@ -42,29 +68,37 @@ def compute_spin(field, dx):
     for i in range(Ny - 1, 0, -1):
         diff = np.angle(np.exp(1j * (phase[i-1, 0] - phase[i, 0])))
         winding += diff
+    
     return winding / (2 * np.pi)
 
 def compute_charge(A, dx):
     """
     Compute the net charge from the gauge field A.
-    (Placeholder: In this simulation, we assume the net charge is fixed at -1.)
+    (Placeholder: currently returns -1.)
     """
     return -1.0
 
 def compute_gravity_indentation(Phi, dx):
     """
     Compute a gravitational indentation proxy for mass.
-    (Placeholder: Returns a constant value.)
+    (Placeholder: returns 1.)
     """
     return 1.0
+
+def compute_energy_density(phi, dx):
+    """
+    Compute a rough energy density for a scalar field phi as the mean square of its gradients.
+    """
+    grad_y = np.gradient(phi, dx, axis=2)
+    grad_z = np.gradient(phi, dx, axis=3)
+    energy_density = np.mean(np.abs(grad_y)**2 + np.abs(grad_z)**2)
+    return energy_density
 
 def output_diagnostics_csv(snapshots, filename="simulation_diagnostics.csv", max_rows=100):
     """
     Write simulation diagnostics to a CSV file with columns:
       time, phi1_amp_mean, phi1_amp_std, phi1_phase_mean, phi2_phase_mean, spin, charge, grav_indentation.
-      
-    If the number of snapshots exceeds max_rows, we downsample by taking every nth snapshot.
-    This ensures the output CSV remains under roughly 20 KB.
+    Downsamples snapshots to keep the CSV file size compact.
     """
     import csv
     total_snapshots = len(snapshots)
@@ -86,23 +120,28 @@ def output_diagnostics_csv(snapshots, filename="simulation_diagnostics.csv", max
             phi1_amp_std = np.std(amp1)
             phi1_phase_mean = np.mean(phase1)
             phi2_phase_mean = np.mean(phase2)
-            spin = compute_spin(phi1, 0.1)  # dx passed as 0.1 (or use actual dx)
-            charge = compute_charge(A, 0.1)
-            grav_indentation = 1.0  # placeholder
+            spin = compute_spin(phi1, dx)
+            charge = compute_charge(A, dx)
+            grav_indentation = 1.0  # Placeholder
             row = [tau, phi1_amp_mean, phi1_amp_std, phi1_phase_mean, phi2_phase_mean, spin, charge, grav_indentation]
             writer.writerow(row)
+    print(f"Diagnostics CSV written to {filename}")
 
 if __name__ == "__main__":
-    # For testing: create a few dummy snapshots and write diagnostics to CSV.
-    snapshots = []
-    for i in range(50):
-        tau = i * 0.01
-        shape = (4, 8, 16, 16)
-        # For testing, we generate a simple vortex-like pattern in phi1 and phi2.
-        phi1 = np.ones(shape, dtype=np.complex128) * np.exp(1j * np.linspace(-3.14, 3.14, num=shape[2]).reshape(1,1,shape[2],1))
-        phi2 = phi1.copy()
-        A = np.zeros((4, 8, 16, 16), dtype=np.complex128)
-        snapshots.append((tau, phi1, phi2, A))
-    
-    output_diagnostics_csv(snapshots)
-    print("Diagnostics CSV written.")
+    print("GPU Usage Report:")
+    report_gpu_usage()
+    # For testing: create dummy fields.
+    shape = (16, 32, 64, 64)
+    phi1 = np.random.randn(*shape) + 1j * np.random.randn(*shape)
+    phi2 = np.random.randn(*shape) + 1j * np.random.randn(*shape)
+    A = np.random.randn(4, 32, 64, 64) + 1j * np.random.randn(4, 32, 64, 64)
+    dump_str = "Detailed Diagnostics Report\n===========================\n\n"
+    N0, N1, Ny, Nz = shape
+    central_phi1 = phi1[N0//2, N1//2, :, :]
+    amp1 = np.abs(central_phi1)
+    phase1 = np.angle(central_phi1)
+    dump_str += f"phi1 Amplitude: min = {np.min(amp1):.4e}, max = {np.max(amp1):.4e}, mean = {np.mean(amp1):.4e}, std = {np.std(amp1):.4e}\n"
+    dump_str += f"phi1 Phase: min = {np.min(phase1):.4e}, max = {np.max(phase1):.4e}, mean = {np.mean(phase1):.4e}, std = {np.std(phase1):.4e}\n"
+    energy = compute_energy_density(phi1, dx=0.1)
+    dump_str += f"Energy Density: {energy:.4e}\n"
+    print(dump_str)

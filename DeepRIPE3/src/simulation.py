@@ -2,8 +2,12 @@
 """
 simulation.py
 
-Runs the DV/RIPE simulation, calling either the fixed-step or adaptive-step PDE solver
-in pde_solver.py. Also measures spin, charge, and gravitational indentation at the end.
+Runs the DV-RIPE simulation using a GPU-accelerated PDE solver for the gauge field.
+Scalar fields remain on the CPU while gauge field A (and its momentum E) are kept
+on the GPU (if "use_gpu": True). The simulation uses ambient seeding on an enlarged domain,
+and an extended simulation duration.
+
+Diagnostics (spin, charge, gravitational indentation) are computed at the end.
 """
 
 import numpy as np
@@ -11,108 +15,92 @@ import numpy as np
 # Field initializers
 from src.fields import init_electron_fields, init_gauge_field, init_gravity_field
 
-# PDE solvers (fixed + adaptive) and gauge utilities
-from src.pde_solver import (
-    evolve_fields,
-    evolve_fields_adaptive,
-    field_strength  # no longer used for spin computation
-)
+# PDE solvers (with GPU integration)
+from src.pde_solver import evolve_fields, evolve_fields_adaptive
 
 # Diagnostics
-from src.diagnostics import (
-    compute_spin,            # now compute spin directly from phi1
-    compute_charge,
-    compute_gravity_indentation
-)
-
+from src.diagnostics import compute_spin, compute_charge, compute_gravity_indentation
 
 def run_dvripe_sim(params):
     """
-    Main DV/RIPE simulation function.
-
+    Main DV-RIPE simulation function.
+    
     :param params: dict with keys:
-       "field_shape", "gauge_shape", "grav_shape" (tuples)
-       "tau_end", "dx" (floats)
-       "dt" (float, optional) - if missing, defaults to 0.01
-       "lambda_e", "v_e", "delta_e", "e_gauge" (floats)
-       "adaptive" (bool) - whether to use adaptive time stepping
-       "dt_min", "dt_max", "err_tolerance" (for adaptive stepping)
+         "field_shape", "gauge_shape", "grav_shape" (tuples)
+         "tau_end", "dx" (floats)
+         "dt" (float, optional; default 0.01)
+         "lambda_e", "v_e", "delta_e", "e_gauge" (floats)
+         "adaptive" (bool) - whether to use adaptive time stepping
+         "use_gpu" (bool) - if True, gauge field evolution is performed on the GPU.
+         Additional keys for adaptive stepping as needed.
+    
     :return: (spin_val, charge_val, grav_val)
+             Spin is computed directly from the final electron field (phi1).
     """
-
-    # 1. Extract shapes & simulation parameters
-    field_shape = params["field_shape"]   # e.g. (4, 8, 8, 8) or (4, 8, 16, 16)
-    gauge_shape = params["gauge_shape"]     # e.g. (4, 8, 16, 16)
-    grav_shape  = params["grav_shape"]      # e.g. (16, 16, 16)
-
-    tau_end = params["tau_end"]             # dimensionless final time
-    dx      = params["dx"]                  # spatial step
-
-    # Provide a default dt if not specified
+    
+    # Extract grid shapes and parameters.
+    field_shape = params["field_shape"]   # e.g. (16, 32, 64, 64)
+    gauge_shape = params["gauge_shape"]     # e.g. (4, 32, 64, 64)
+    grav_shape  = params["grav_shape"]      # e.g. (64, 64, 64)
+    
+    tau_end = params["tau_end"]
+    dx = params["dx"]
     dt = params.get("dt", 0.01)
-
-    # PDE parameters for electron fields (adapt for protons if needed)
+    
+    # Set default PDE parameters if not provided.
     params.setdefault("lambda_e", 1.0)
     params.setdefault("v_e", 1.0)
-    params.setdefault("delta_e", 0.0)
+    params.setdefault("delta_e", 0.1)
     params.setdefault("e_gauge", 0.1)
-
-    # 2. Initialize fields
-    phi1_init, phi2_init = init_electron_fields(field_shape)
-    A_init = init_gauge_field(gauge_shape)
+    params.setdefault("use_gpu", False)
+    
+    # Initialize fields.
+    # Use ambient initial conditions so that the nonlinear dynamics can generate vortices.
+    phi1_init, phi2_init = init_electron_fields(field_shape, ambient=True)
+    A_init = init_gauge_field(gauge_shape, ambient=True)
     grav_init = init_gravity_field(grav_shape)
-
-    # 3. Select PDE evolution approach
+    
+    # Choose evolution approach.
     adaptive = params.get("adaptive", False)
     if adaptive:
-        dt_min        = params.get("dt_min", 1e-6)
-        dt_max        = params.get("dt_max", 0.1)
+        dt_min = params.get("dt_min", 1e-6)
+        dt_max = params.get("dt_max", 0.1)
         err_tolerance = params.get("err_tolerance", 1e-3)
-
-        final_traj = evolve_fields_adaptive(
-            phi1_init, phi2_init, A_init,
-            tau_end, dt, dx, params,
-            err_tolerance=err_tolerance,
-            dt_min=dt_min,
-            dt_max=dt_max
-        )
+        final_traj = evolve_fields_adaptive(phi1_init, phi2_init, A_init, tau_end, dt, dx, params,
+                                              err_tolerance=err_tolerance, dt_min=dt_min, dt_max=dt_max)
     else:
-        final_traj = evolve_fields(
-            phi1_init, phi2_init, A_init,
-            tau_end, dt, dx, params
-        )
-
-    # 4. Extract final state
+        final_traj = evolve_fields(phi1_init, phi2_init, A_init, tau_end, dt, dx, params)
+    
+    # Extract final state.
+    # Note: For gauge field, if GPU is used, evolve_fields() returns A as a NumPy array (via .get()).
     _, phi1_fin, phi2_fin, A_fin = final_traj[-1]
-
-    # 5. Compute diagnostics:
-    # Now compute spin directly from the final electron field (phi1_fin).
-    spin_val   = compute_spin(phi1_fin, dx)
+    
+    # Compute diagnostics:
+    # Compute spin directly from the final electron field phi1_fin.
+    spin_val = compute_spin(phi1_fin, dx)
     charge_val = compute_charge(A_fin, dx)
-    # For gravity, we use the initial gravity field (could be updated with a proper solver)
-    grav_val   = compute_gravity_indentation(grav_init, dx)
-
+    grav_val = compute_gravity_indentation(grav_init, dx)
+    
     return spin_val, charge_val, grav_val
 
-
 if __name__ == "__main__":
-    # Example default parameters for testing purposes.
+    # Example default parameters using the enlarged domain, extended duration, and GPU enabled.
     default_params = {
-        "field_shape": (4, 8, 16, 16),
-        "gauge_shape": (4, 8, 16, 16),
-        "grav_shape": (16, 16, 16),
-        "tau_end": 1.0,
+        "field_shape": (16, 32, 64, 64),    # Enlarged domain for electron fields.
+        "gauge_shape": (4, 32, 64, 64),      # Enlarged gauge field.
+        "grav_shape": (64, 64, 64),          # Enlarged gravity field.
+        "tau_end": 5.0,                     # Extended simulation duration.
         "dx": 0.1,
         "dt": 0.01,
         "adaptive": True,
         "dt_min": 1e-6,
         "dt_max": 0.1,
         "err_tolerance": 1e-3,
-        # These will be used (or overwritten) by parameter search if needed:
         "lambda_e": 1.0,
         "v_e": 1.0,
-        "delta_e": 0.0,
+        "delta_e": 0.1,
         "e_gauge": 0.1,
+        "use_gpu": True,                    # Enable GPU acceleration.
     }
     spin, charge, grav = run_dvripe_sim(default_params)
     print("Spin:", spin)
