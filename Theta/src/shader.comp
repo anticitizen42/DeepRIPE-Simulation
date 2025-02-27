@@ -1,0 +1,154 @@
+#version 450
+
+// Workgroup dimensions; adjust as needed.
+layout (local_size_x = 16, local_size_y = 16) in;
+
+// Binding 0: input field φ (flattened array, representing a polar grid)
+layout(binding = 0) buffer InputBuffer {
+    float phi[];
+};
+
+// Binding 1: output derivative dφ/dt (flattened array)
+layout(binding = 1) buffer OutputBuffer {
+    float dphi[];
+};
+
+// Push constants provide grid dimensions and PDE parameters.
+layout(push_constant) uniform PushConstants {
+    int Nr;         // number of radial grid points
+    int Ntheta;     // number of angular grid points
+    float dr;       // radial grid spacing
+    float dtheta;   // angular grid spacing
+
+    // PDE parameters:
+    float D_r;      // radial diffusion coefficient
+    float D_theta;  // angular diffusion coefficient
+    float lambda_e; // nonlinear potential coefficient
+    float v_e;      // potential parameter v_e
+    float delta_e;  // nonlinear potential offset
+    float alpha;    // nonlinear strength for |φ|^4 term
+    float eta;      // additional nonlinear factor
+    float gamma;    // damping coefficient
+    float e_gauge;  // gauge interaction coefficient
+    float beta;     // gravitational coefficient (not fully computed)
+    float kappa;    // membrane coupling coefficient (not fully computed)
+    float xi;       // stochastic jitter amplitude
+    float time;     // current time (for jitter generation)
+} pc;
+
+//
+// Helper function: 3x3 local average around (i,j)
+//
+float localAverage(int i, int j) {
+    float sum = 0.0;
+    int count = 0;
+    // Loop over a 3x3 neighborhood.
+    for (int di = -1; di <= 1; di++) {
+        int ni = clamp(i + di, 0, pc.Nr - 1);
+        for (int dj = -1; dj <= 1; dj++) {
+            // Use periodic boundaries in the angular direction.
+            int nj = (j + dj + pc.Ntheta) % pc.Ntheta;
+            sum += phi[ni * pc.Ntheta + nj];
+            count++;
+        }
+    }
+    return sum / float(count);
+}
+
+//
+// Main shader entry point.
+//
+void main() {
+    // Compute grid indices.
+    uint global_i = gl_GlobalInvocationID.x; // radial index
+    uint global_j = gl_GlobalInvocationID.y; // angular index
+
+    // If outside the grid, exit.
+    if (global_i >= uint(pc.Nr) || global_j >= uint(pc.Ntheta))
+        return;
+
+    int i = int(global_i);
+    int j = int(global_j);
+    int idx = i * pc.Ntheta + j;
+    float phi_center = phi[idx];
+
+    // ----------------------------
+    // Anisotropic Laplacian L[φ]
+    // ----------------------------
+    float phi_r;
+    float phi_rr;
+    if (i == 0) {
+        // Forward difference at inner boundary.
+        phi_r = (phi[(i+1) * pc.Ntheta + j] - phi_center) / pc.dr;
+        phi_rr = (phi[(i+1) * pc.Ntheta + j] - 2.0 * phi_center + phi[(i+1) * pc.Ntheta + j]) / (pc.dr * pc.dr);
+    } else if (i == pc.Nr - 1) {
+        // Backward difference at outer boundary.
+        phi_r = (phi_center - phi[(i-1) * pc.Ntheta + j]) / pc.dr;
+        phi_rr = (phi[(i-1) * pc.Ntheta + j] - 2.0 * phi_center + phi[(i-1) * pc.Ntheta + j]) / (pc.dr * pc.dr);
+    } else {
+        // Central difference in the interior.
+        phi_r = (phi[(i+1) * pc.Ntheta + j] - phi[(i-1) * pc.Ntheta + j]) / (2.0 * pc.dr);
+        phi_rr = (phi[(i+1) * pc.Ntheta + j] - 2.0 * phi_center + phi[(i-1) * pc.Ntheta + j]) / (pc.dr * pc.dr);
+    }
+    // Angular second derivative with periodic boundaries.
+    int jp = (j + 1) % pc.Ntheta;
+    int jm = (j - 1 + pc.Ntheta) % pc.Ntheta;
+    float phi_theta_theta = (phi[i * pc.Ntheta + jp] - 2.0 * phi_center + phi[i * pc.Ntheta + jm]) / (pc.dtheta * pc.dtheta);
+
+    // Compute Laplacian: note the 1/r term (avoid division by zero at r = 0).
+    float r_val = float(i) * pc.dr;
+    float lap;
+    if (r_val > 1e-6) {
+        lap = pc.D_r * phi_rr + (phi_r / r_val) + (pc.D_theta / (r_val * r_val)) * phi_theta_theta;
+    } else {
+        lap = pc.D_r * phi_rr + phi_r; // fallback at center
+    }
+
+    // ----------------------------
+    // Nonlinear Potential N[φ]
+    // ----------------------------
+    float local_mean = localAverage(i, j);
+    float nonlinear = 0.5 * pc.lambda_e * ((phi_center * phi_center) - (pc.v_e * pc.v_e)) * phi_center
+                      + pc.delta_e * (phi_center - local_mean)
+                      + 0.5 * pc.alpha * pc.eta * (phi_center * phi_center * phi_center * phi_center) * phi_center;
+
+    // ----------------------------
+    // Damping term: -γ φ
+    // ----------------------------
+    float damping = -pc.gamma * phi_center;
+
+    // ----------------------------
+    // Gauge Interaction G[φ]
+    // ----------------------------
+    // Approximate angular derivative.
+    float phi_jp = phi[i * pc.Ntheta + jp];
+    float gauge = -pc.e_gauge * (phi_jp - phi_center) / pc.dtheta;
+
+    // ----------------------------
+    // Gravitational Term G_grav[φ]
+    // ----------------------------
+    // A proper reduction (global average of |φ|^2) is non-trivial in a shader.
+    // For now, we set it to zero or you could use an approximate local value.
+    float grav = 0.0;
+
+    // ----------------------------
+    // Membrane Coupling M[φ]
+    // ----------------------------
+    // This term requires computing the boundary average.
+    // For simplicity, we set it to zero in this implementation.
+    float membrane = 0.0;
+
+    // ----------------------------
+    // Stochastic Jitter ξη(t)
+    // ----------------------------
+    // Use a pseudo-random value based on the index and time.
+    float rand_val = fract(sin(float(idx) * 12.9898 + pc.time * 78.233) * 43758.5453) - 0.5;
+    float jitter = pc.xi * rand_val;
+
+    // ----------------------------
+    // Sum up all contributions.
+    // ----------------------------
+    float dphi_dt = lap + nonlinear + damping + gauge + grav + membrane + jitter;
+
+    dphi[idx] = dphi_dt;
+}
