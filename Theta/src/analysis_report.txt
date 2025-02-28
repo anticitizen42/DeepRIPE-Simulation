@@ -1,0 +1,110 @@
+======================================================================
+DV-RIPE Mass–Energy Field Deep Diagnostics Report
+Version 1.6.2
+Generated: 2025-02-27T21:43:31
+======================================================================
+
+--- GLOBAL STATISTICS ---
+mean_amplitude           : 1.0001e+00
+std_amplitude            : 1.0136e-02
+l2_norm                  : 1.8105e+02
+mean_gradient            : 4.3710e-02
+max_gradient             : 1.5783e-01
+total_spectral_energy    : 1.0740e+09
+
+--- VORTEX DIAGNOSTICS ---
+Vortex Nexus Location       : (row: 38, col: 65)
+Estimated Vortex Core Radius: 93.98 pixels
+Vortex Spin (approx.)       : 13.9430
+Vortex Energy               : 1.0038e+00
+Vortex Charge (heuristic)   : -1.1678e-16
+Mean Local Vorticity        : 8.1176e-03
+
+--- DUAL RESONANCE ANALYSIS (FOURIER SPECTROSCOPY) ---
+Dual resonance analysis did not find two dominant peaks.
+
+--- WAVELET ANALYSIS (MORLET SCALOGRAM) ---
+Wavelet scalogram computed for the central angular profile.
+Dominant scales appear in range: 1 to 63 (inverse frequency units)
+
+--- GLOBAL POLAR ANALYSIS ---
+Polar map dimensions: (200, 360)
+The polar map shows a nearly uniform background with the vortex clearly visible near the center.
+
+--- ANGULAR DECAY ANALYSIS ---
+Decay constant tau (angular samples) for selected radial slices:
+  Radial Slice   0: tau = nan
+  Radial Slice   5: tau = 6.43
+  Radial Slice  10: tau = 5.71
+  Radial Slice  15: tau = 3.32
+  Radial Slice  20: tau = 2.10
+  Radial Slice  25: tau = 27389.37
+  Radial Slice  30: tau = 1.25
+  Radial Slice  35: tau = 1.43
+  Radial Slice  40: tau = 41047.00
+  Radial Slice  45: tau = 4991.29
+  Radial Slice  50: tau = 50093.94
+  Radial Slice  55: tau = -49102.28
+  Radial Slice  60: tau = 1.07
+  Radial Slice  65: tau = 4132.74
+  Radial Slice  70: tau = 1.01
+  Radial Slice  75: tau = 54268.40
+  Radial Slice  80: tau = -76153.71
+  Radial Slice  85: tau = 118260.57
+  Radial Slice  90: tau = 2.85
+  Radial Slice  95: tau = 46062.12
+  Radial Slice 100: tau = 3.10
+  Radial Slice 105: tau = 67245.13
+  Radial Slice 110: tau = 45.47
+  Radial Slice 115: tau = 175081.56
+  Radial Slice 120: tau = 95259.05
+  Radial Slice 125: tau = 42.42
+  Radial Slice 130: tau = 5.71
+  Radial Slice 135: tau = 14978.90
+  Radial Slice 140: tau = 26.85
+  Radial Slice 145: tau = 31283.30
+  Radial Slice 150: tau = 41.64
+  Radial Slice 155: tau = 74926.67
+  Radial Slice 160: tau = 80816.92
+  Radial Slice 165: tau = 88501.35
+  Radial Slice 170: tau = 2.58
+  Radial Slice 175: tau = 6068.62
+  Radial Slice 180: tau = 12364.21
+  Radial Slice 185: tau = 15.56
+  Radial Slice 190: tau = 23403.06
+  Radial Slice 195: tau = 10009.95
+
+--- BOUNDARY VORTICITY ANALYSIS ---
+Boundary Vorticity (right side, window=20): 8.2560e-03
+
+--- INTERPRETATION OF FINAL ELECTRON VORTEX ---
+Final Field File: 'final_electron_vortex.npy'
+Interpretation:
+  - The global field remains near unity, with fluctuations on the order of 1%.
+  - The vortex is consistently located at approximately (row: 38, col: 65).
+  - However, the estimated core radius of 93.98 pixels is larger than desired for an electron-like vortex.
+  - The Fourier analysis did not resolve two distinct dominant peaks, suggesting that dual resonant modes are not clearly separated under the current parameters.
+  - The wavelet scalogram reveals multi-scale spectral features within the vortex core,
+    but the absence of clear dual peaks indicates that further parameter tuning is needed.
+  - Angular decay analysis shows variable decay constants, with some numerical artifacts,
+    indicating that the spatial decay behavior is non-uniform.
+  - Boundary vorticity is very low, suggesting that the phase is smooth at the edges.
+
+Overall, while the simulation produces a vortex with complex structure,
+the current parameters yield a vortex that is too large to be considered electron-like.
+To achieve a tighter, electron-like vortex, further tuning of the damping,
+nonlinear coupling, gauge coupling, and initial seeding conditions is required.
+
+--- SUMMARY & CONCLUSIONS ---
+  Global field remains near unity with small fluctuations.
+  Vortex is located at (row: 38, col: 65) with core radius 93.98 pixels.
+  Fourier analysis did not resolve two dominant peaks.
+  Wavelet analysis confirms the presence of multi-scale spectral features within the vortex core.
+  Angular decay analysis yields varying decay constants with some numerical artifacts.
+  Boundary vorticity is low, indicating smooth phase behavior along the edges.
+  Overall, while dual resonant features are suggested, the vortex remains too large for an electron-like structure.
+  Further parameter tuning is required to produce a tighter, electron-like vortex with net half-integer spin and charge -1.
+
+======================================================================
+End of Report
+======================================================================

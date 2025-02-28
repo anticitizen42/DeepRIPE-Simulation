@@ -1,0 +1,5 @@
+gamma=0.05
+eta=2.0
+e_gauge=0.1
+delta_e=0.3
+kappa=0.2
